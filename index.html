@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>LinkVault | Firebase Edit Mode</title>
+<title>LinkVault | Sorting Mode</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 /* CSS Dasar */
@@ -16,31 +16,36 @@
 }
 body{ font-family: var(--font); background: var(--bg); color: var(--text-main); min-height: 100vh; padding: 0 1.5rem 5rem; }
 .container{ max-width: 800px; margin: 0 auto; }
-header{ display: flex; align-items: center; justify-content: space-between; padding: 3rem 0 2rem; }
+header{ display: flex; align-items: center; justify-content: space-between; padding: 3rem 0 1.5rem; }
 .logo-text{ font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
 .logo-text span{ color: var(--accent); }
-.btn-add{ background: var(--accent); color: #fff; border: none; padding: 10px 18px; border-radius: var(--r-md); font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
-.search-wrap{ position: relative; margin-bottom: 2.5rem; }
-.search-input{ width: 100%; padding: 14px 20px 14px 48px; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--r-md); outline: none; }
-.search-ico{ position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--text-sub); }
+.btn-add{ background: var(--accent); color: #fff; border: none; padding: 10px 18px; border-radius: var(--r-md); font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+
+/* Filter & Search Bar */
+.controls-row { display: flex; gap: 12px; margin-bottom: 2.5rem; flex-wrap: wrap; }
+.search-wrap{ position: relative; flex: 1; min-width: 200px; }
+.search-input{ width: 100%; padding: 12px 18px 12px 42px; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--r-md); outline: none; font-family: inherit; }
+.search-ico{ position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--text-sub); pointer-events: none; }
+
+.sort-select { 
+  padding: 0 15px; background: var(--card-bg); border: 1px solid var(--border); 
+  border-radius: var(--r-md); outline: none; font-family: inherit; font-size: 13px;
+  color: var(--text-main); font-weight: 600; cursor: pointer;
+}
 
 /* Grid & Cards */
 .grid{ display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; }
-.link-card{ position: relative; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 22px 12px; text-decoration: none; display: flex; flex-direction: column; align-items: center; transition: 0.2s; box-shadow: var(--shadow); }
+.link-card{ position: relative; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 25px 12px; text-decoration: none; display: flex; flex-direction: column; align-items: center; transition: 0.2s; box-shadow: var(--shadow); }
 .link-card:hover{ transform: translateY(-4px); border-color: var(--accent); }
-.icon-box{ width: 56px; height: 56px; background: var(--accent-soft); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 12px; overflow: hidden; }
+.icon-box{ width: 60px; height: 60px; background: var(--accent-soft); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 30px; margin-bottom: 12px; overflow: hidden; }
 .icon-box img { width: 100%; height: 100%; object-fit: cover; }
 .card-name{ font-weight: 700; font-size: 14px; color: var(--text-main); text-align: center; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.card-domain{ font-size: 11px; color: var(--text-sub); margin-top: 4px; }
 
-/* Action Buttons on Card */
-.action-btns { position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; opacity: 0; transition: 0.2s; z-index: 5; }
+.action-btns { position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; opacity: 0; transition: 0.2s; }
 .link-card:hover .action-btns { opacity: 1; }
 .mini-btn { width: 24px; height: 24px; background: #fff; border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; }
-.mini-btn.del:hover { color: var(--danger); border-color: var(--danger); }
-.mini-btn.edit:hover { color: var(--accent); border-color: var(--accent); }
 
-/* Modal & Tabs */
+/* Modal & Sisanya */
 .overlay{ position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 100; opacity: 0; pointer-events: none; transition: 0.2s; }
 .overlay.open{ opacity: 1; pointer-events: all; }
 .modal{ background: #fff; width: 90%; max-width: 440px; border-radius: 20px; padding: 2rem; max-height: 90vh; overflow-y: auto; }
@@ -54,7 +59,6 @@ header{ display: flex; align-items: center; justify-content: space-between; padd
 .icon-opt{ aspect-ratio: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; border-radius: 6px; }
 .icon-opt.selected{ background: var(--accent-soft); border: 1.5px solid var(--accent); }
 .photo-upload-box { border: 2px dashed var(--border); border-radius: 12px; padding: 20px; text-align: center; cursor: pointer; }
-.photo-preview-wrap { display: flex; align-items: center; gap: 15px; background: #f8fafc; padding: 10px; border-radius: 10px; border: 1px solid var(--border); }
 .img-prev { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
 .toast{ position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--text-main); color: #fff; padding: 10px 20px; border-radius: 40px; font-size: 13px; font-weight: 600; opacity: 0; transition: 0.3s; z-index: 1000; }
 .toast.show{ opacity: 1; bottom: 30px; }
@@ -70,8 +74,17 @@ header{ display: flex; align-items: center; justify-content: space-between; padd
     </button>
   </header>
 
-  <div class="search-wrap">
-    <input type="text" class="search-input" id="search" placeholder="Cari koleksi Anda..." oninput="window.renderLinks()"/>
+  <div class="controls-row">
+    <div class="search-wrap">
+      <svg class="search-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input type="text" class="search-input" id="search" placeholder="Cari nama..." oninput="window.renderLinks()"/>
+    </div>
+    <select class="sort-select" id="sort-order" onchange="window.renderLinks()">
+      <option value="newest">Terbaru</option>
+      <option value="oldest">Terlama</option>
+      <option value="name-asc">Nama A-Z</option>
+      <option value="name-desc">Nama Z-A</option>
+    </select>
   </div>
 
   <div class="grid" id="grid"></div>
@@ -80,7 +93,8 @@ header{ display: flex; align-items: center; justify-content: space-between; padd
 <div class="overlay" id="modal-overlay">
   <div class="modal">
     <h2 id="modal-title" style="margin-bottom: 1.5rem; font-size: 18px;">Simpan Link Baru</h2>
-    <input type="hidden" id="f-edit-key"> <div class="field">
+    <input type="hidden" id="f-edit-key">
+    <div class="field">
       <label>Nama</label>
       <input type="text" id="f-name" placeholder="cth: Kerja">
     </div>
@@ -101,7 +115,7 @@ header{ display: flex; align-items: center; justify-content: space-between; padd
           <input type="file" id="file-input" hidden accept="image/*" onchange="handleFile(this.files[0])">
         </div>
         <div id="photo-preview-area" style="display:none; margin-top:10px;">
-            <div class="photo-preview-wrap">
+            <div style="display:flex; align-items:center; gap:10px; background:#f8fafc; padding:10px; border-radius:10px;">
                 <img src="" id="preview-img" class="img-prev">
                 <button onclick="removePhoto()" style="border:none; background:none; color:var(--danger); cursor:pointer;">Hapus</button>
             </div>
@@ -132,7 +146,6 @@ header{ display: flex; align-items: center; justify-content: space-between; padd
             appId: "1:629446223042:web:092fe22b2bdb868ba2c75b"
         };
 
-
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const linksRef = ref(db, 'links');
@@ -152,12 +165,23 @@ header{ display: flex; align-items: center; justify-content: space-between; padd
   window.renderLinks = () => {
     const grid = document.getElementById('grid');
     const q = document.getElementById('search').value.toLowerCase();
-    const filtered = window.links.filter(l => l.name.toLowerCase().includes(q) || l.url.toLowerCase().includes(q));
+    const sortBy = document.getElementById('sort-order').value;
+
+    let filtered = window.links.filter(l => l.name.toLowerCase().includes(q));
+
+    // LOGIKA SORTING
+    if (sortBy === 'newest') filtered.sort((a, b) => b.createdAt - a.createdAt);
+    else if (sortBy === 'oldest') filtered.sort((a, b) => a.createdAt - b.createdAt);
+    else if (sortBy === 'name-asc') filtered.sort((a, b) => a.name.localeCompare(b.name));
+    else if (sortBy === 'name-desc') filtered.sort((a, b) => b.name.localeCompare(a.name));
 
     grid.innerHTML = '';
-    filtered.reverse().forEach(l => {
-      let domain = '';
-      try { domain = new URL(l.url).hostname.replace('www.', ''); } catch(e) {}
+    if (filtered.length === 0) {
+      grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 4rem 1rem; color: var(--text-sub); font-size:14px;">Kosong.</div>`;
+      return;
+    }
+
+    filtered.forEach(l => {
       const card = document.createElement('a');
       card.className = 'link-card';
       card.href = l.url;
@@ -165,12 +189,11 @@ header{ display: flex; align-items: center; justify-content: space-between; padd
       const visual = l.photo ? `<img src="${l.photo}">` : `<span>${l.icon || '🔗'}</span>`;
       card.innerHTML = `
         <div class="action-btns">
-            <div class="mini-btn edit" onclick="window.editLink(event, '${l.fbKey}')">✎</div>
-            <div class="mini-btn del" onclick="window.deleteLink(event, '${l.fbKey}')">✕</div>
+            <div class="mini-btn" style="color:var(--accent)" onclick="window.editLink(event, '${l.fbKey}')">✎</div>
+            <div class="mini-btn" style="color:var(--danger)" onclick="window.deleteLink(event, '${l.fbKey}')">✕</div>
         </div>
         <div class="icon-box">${visual}</div>
         <div class="card-name">${l.name}</div>
-        <div class="card-domain">${domain}</div>
       `;
       grid.appendChild(card);
     });
@@ -183,25 +206,22 @@ header{ display: flex; align-items: center; justify-content: space-between; padd
     if(!url.startsWith('http')) return showToast('URL tidak valid');
 
     const linkData = {
-      name: name || new URL(url).hostname,
+      name: name || "Tanpa Nama",
       url: url,
       icon: currentTab === 'emoji' ? selectedIcon : null,
       photo: currentTab === 'photo' ? uploadedPhoto : null,
-      updatedAt: Date.now()
+      createdAt: editKey ? (window.links.find(l => l.fbKey === editKey).createdAt || Date.now()) : Date.now()
     };
 
     if (editKey) {
-      // MODE EDIT
       update(ref(db, `links/${editKey}`), linkData).then(() => {
         window.closeModal();
-        showToast('Berhasil diperbarui!');
+        showToast('Diperbarui!');
       });
     } else {
-      // MODE TAMBAH
-      const newRef = push(linksRef);
-      set(newRef, { ...linkData, createdAt: Date.now() }).then(() => {
+      push(linksRef, linkData).then(() => {
         window.closeModal();
-        showToast('Berhasil disimpan!');
+        showToast('Disimpan!');
       });
     }
   };
@@ -210,12 +230,10 @@ header{ display: flex; align-items: center; justify-content: space-between; padd
     e.preventDefault(); e.stopPropagation();
     const data = window.links.find(l => l.fbKey === key);
     if (!data) return;
-
     document.getElementById('modal-title').textContent = "Edit Link";
     document.getElementById('f-edit-key').value = key;
     document.getElementById('f-name').value = data.name;
     document.getElementById('f-url').value = data.url;
-    
     if (data.photo) {
         window.switchTab('photo');
         uploadedPhoto = data.photo;
@@ -227,13 +245,12 @@ header{ display: flex; align-items: center; justify-content: space-between; padd
         selectedIcon = data.icon || EMOJIS[0];
         initIcons();
     }
-    
     document.getElementById('modal-overlay').classList.add('open');
   };
 
   window.deleteLink = (e, key) => {
     e.preventDefault(); e.stopPropagation();
-    if(confirm('Hapus link ini?')) {
+    if(confirm('Hapus item ini?')) {
         remove(ref(db, `links/${key}`)).then(() => showToast('Dihapus'));
     }
   };
@@ -243,10 +260,9 @@ header{ display: flex; align-items: center; justify-content: space-between; padd
     document.getElementById('f-edit-key').value = "";
     document.getElementById('f-name').value = "";
     document.getElementById('f-url').value = "";
-    selectedIcon = EMOJIS[0];
-    initIcons();
-    window.switchTab('emoji');
     window.removePhoto();
+    window.switchTab('emoji');
+    initIcons();
     document.getElementById('modal-overlay').classList.add('open');
   };
 
@@ -258,7 +274,6 @@ header{ display: flex; align-items: center; justify-content: space-between; padd
     document.getElementById('tab-emoji-btn').classList.toggle('active', type === 'emoji');
     document.getElementById('tab-photo-btn').classList.toggle('active', type === 'photo');
   };
-
   window.handleFile = (file) => {
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -269,13 +284,11 @@ header{ display: flex; align-items: center; justify-content: space-between; padd
     };
     reader.readAsDataURL(file);
   };
-
   window.removePhoto = () => {
     uploadedPhoto = null;
     document.getElementById('photo-preview-area').style.display = 'none';
     document.getElementById('drop-zone').style.display = 'block';
   };
-
   function initIcons() {
     const container = document.getElementById('icon-selector');
     container.innerHTML = '';
