@@ -3,12 +3,10 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>LinkVault | Firebase Realtime</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<title>LinkVault | Firebase Edit Mode</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
-/* CSS tetap sama persis dengan versi sebelumnya */
+/* CSS Dasar */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg: #f8f9fc; --card-bg: #ffffff; --text-main: #1a1d23; --text-sub: #64748b;
@@ -21,11 +19,12 @@ body{ font-family: var(--font); background: var(--bg); color: var(--text-main); 
 header{ display: flex; align-items: center; justify-content: space-between; padding: 3rem 0 2rem; }
 .logo-text{ font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
 .logo-text span{ color: var(--accent); }
-.btn-add{ background: var(--accent); color: #fff; border: none; padding: 10px 18px; border-radius: var(--r-md); font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
-.btn-add:hover{ background: #4f46e5; transform: translateY(-1px); }
+.btn-add{ background: var(--accent); color: #fff; border: none; padding: 10px 18px; border-radius: var(--r-md); font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
 .search-wrap{ position: relative; margin-bottom: 2.5rem; }
-.search-input{ width: 100%; padding: 14px 20px 14px 48px; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--r-md); font-size: 15px; outline: none; }
+.search-input{ width: 100%; padding: 14px 20px 14px 48px; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--r-md); outline: none; }
 .search-ico{ position: absolute; left: 18px; top: 50%; transform: translateY(-50%); color: var(--text-sub); }
+
+/* Grid & Cards */
 .grid{ display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; }
 .link-card{ position: relative; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 22px 12px; text-decoration: none; display: flex; flex-direction: column; align-items: center; transition: 0.2s; box-shadow: var(--shadow); }
 .link-card:hover{ transform: translateY(-4px); border-color: var(--accent); }
@@ -33,17 +32,24 @@ header{ display: flex; align-items: center; justify-content: space-between; padd
 .icon-box img { width: 100%; height: 100%; object-fit: cover; }
 .card-name{ font-weight: 700; font-size: 14px; color: var(--text-main); text-align: center; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .card-domain{ font-size: 11px; color: var(--text-sub); margin-top: 4px; }
-.del-btn{ position: absolute; top: 8px; right: 8px; width: 24px; height: 24px; background: #fff; border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: 0.2s; color: var(--text-sub); font-size: 10px; z-index: 5; }
-.link-card:hover .del-btn{ opacity: 1; }
+
+/* Action Buttons on Card */
+.action-btns { position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; opacity: 0; transition: 0.2s; z-index: 5; }
+.link-card:hover .action-btns { opacity: 1; }
+.mini-btn { width: 24px; height: 24px; background: #fff; border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 10px; }
+.mini-btn.del:hover { color: var(--danger); border-color: var(--danger); }
+.mini-btn.edit:hover { color: var(--accent); border-color: var(--accent); }
+
+/* Modal & Tabs */
 .overlay{ position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 100; opacity: 0; pointer-events: none; transition: 0.2s; }
 .overlay.open{ opacity: 1; pointer-events: all; }
 .modal{ background: #fff; width: 90%; max-width: 440px; border-radius: 20px; padding: 2rem; max-height: 90vh; overflow-y: auto; }
 .field{ margin-bottom: 1.2rem; }
-.field label{ display: block; font-size: 11px; font-weight: 800; color: var(--text-sub); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-.field input[type="text"]{ width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; outline: none; font-family: inherit; }
+.field label{ display: block; font-size: 11px; font-weight: 800; color: var(--text-sub); margin-bottom: 8px; text-transform: uppercase; }
+.field input{ width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; outline: none; }
 .tab-header { display: flex; gap: 5px; background: #f1f5f9; padding: 4px; border-radius: 10px; margin-bottom: 12px; }
 .tab-btn { flex: 1; padding: 8px; border: none; background: transparent; border-radius: 7px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-sub); }
-.tab-btn.active { background: #fff; color: var(--accent); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.tab-btn.active { background: #fff; color: var(--accent); }
 .icon-grid{ display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; max-height: 100px; overflow-y: auto; padding: 8px; background: #f8fafc; border-radius: 8px; border: 1px solid var(--border); }
 .icon-opt{ aspect-ratio: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 18px; border-radius: 6px; }
 .icon-opt.selected{ background: var(--accent-soft); border: 1.5px solid var(--accent); }
@@ -60,14 +66,12 @@ header{ display: flex; align-items: center; justify-content: space-between; padd
   <header>
     <div class="logo-text">Link<span>Vault.</span></div>
     <button class="btn-add" onclick="openModal()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-      Tambah
+      <span>+</span> Tambah
     </button>
   </header>
 
   <div class="search-wrap">
-    <svg class="search-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-    <input type="text" class="search-input" id="search" placeholder="Cari koleksi Anda..." oninput="renderLinks()"/>
+    <input type="text" class="search-input" id="search" placeholder="Cari koleksi Anda..." oninput="window.renderLinks()"/>
   </div>
 
   <div class="grid" id="grid"></div>
@@ -75,17 +79,17 @@ header{ display: flex; align-items: center; justify-content: space-between; padd
 
 <div class="overlay" id="modal-overlay">
   <div class="modal">
-    <h2 style="margin-bottom: 1.5rem; font-size: 18px;">Simpan Link Baru</h2>
-    <div class="field">
-      <label>Nama Situs</label>
-      <input type="text" id="f-name" placeholder="cth: Portfolio Saya">
+    <h2 id="modal-title" style="margin-bottom: 1.5rem; font-size: 18px;">Simpan Link Baru</h2>
+    <input type="hidden" id="f-edit-key"> <div class="field">
+      <label>Nama</label>
+      <input type="text" id="f-name" placeholder="cth: Kerja">
     </div>
     <div class="field">
       <label>URL</label>
       <input type="text" id="f-url" placeholder="https://...">
     </div>
     <div class="field">
-      <label>Visual / Icon</label>
+      <label>Visual</label>
       <div class="tab-header">
         <button class="tab-btn active" id="tab-emoji-btn" onclick="switchTab('emoji')">Emoji</button>
         <button class="tab-btn" id="tab-photo-btn" onclick="switchTab('photo')">Foto</button>
@@ -93,21 +97,20 @@ header{ display: flex; align-items: center; justify-content: space-between; padd
       <div id="pane-emoji"><div class="icon-grid" id="icon-selector"></div></div>
       <div id="pane-photo" style="display:none;">
         <div class="photo-upload-box" id="drop-zone" onclick="document.getElementById('file-input').click()">
-          <span style="font-size: 24px;">📸</span>
-          <p style="font-size: 12px; color: var(--text-sub); margin-top: 5px;">Klik untuk upload gambar</p>
+          <p style="font-size: 12px; color: var(--text-sub);">Klik untuk upload</p>
           <input type="file" id="file-input" hidden accept="image/*" onchange="handleFile(this.files[0])">
         </div>
         <div id="photo-preview-area" style="display:none; margin-top:10px;">
             <div class="photo-preview-wrap">
                 <img src="" id="preview-img" class="img-prev">
-                <button onclick="removePhoto()" style="border:none; background:none; color:var(--danger); cursor:pointer; font-weight:bold;">Hapus</button>
+                <button onclick="removePhoto()" style="border:none; background:none; color:var(--danger); cursor:pointer;">Hapus</button>
             </div>
         </div>
       </div>
     </div>
     <div style="display: flex; gap: 10px; margin-top: 2rem;">
-      <button onclick="closeModal()" style="flex:1; padding: 12px; border: 1px solid var(--border); background:#fff; border-radius: 8px; cursor: pointer; font-weight: 600;">Batal</button>
-      <button onclick="saveLink()" style="flex:2; padding: 12px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Simpan</button>
+      <button onclick="closeModal()" style="flex:1; padding: 12px; border: 1px solid var(--border); background:#fff; border-radius: 8px; cursor: pointer;">Batal</button>
+      <button onclick="saveLink()" id="btn-save" style="flex:2; padding: 12px; background: var(--accent); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: 600;">Simpan</button>
     </div>
   </div>
 </div>
@@ -116,34 +119,30 @@ header{ display: flex; align-items: center; justify-content: space-between; padd
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getDatabase, ref, set, onValue, push, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+  import { getDatabase, ref, set, update, onValue, push, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
   // --- CONFIG FIREBASE ---
   const firebaseConfig = {
-    
-  apiKey:            "AIzaSyATTNNn1r1ORYTFWdljzd4dessh8t33SbI",
-  authDomain:        "ppk-ormawa-42e49.firebaseapp.com",
-  databaseURL:       "https://ppk-ormawa-42e49-default-rtdb.firebaseio.com",
-  projectId:         "ppk-ormawa-42e49",
-  storageBucket:     "ppk-ormawa-42e49.firebasestorage.app",
-  messagingSenderId: "629446223042",
-  appId:             "1:629446223042:web:092fe22b2bdb868ba2c75b",
-  
-};
- 
+            apiKey: "AIzaSyATTNNn1r1ORYTFWdljzd4dessh8t33SbI",
+            authDomain: "ppk-ormawa-42e49.firebaseapp.com",
+            databaseURL: "https://ppk-ormawa-42e49-default-rtdb.firebaseio.com",
+            projectId: "ppk-ormawa-42e49",
+            storageBucket: "ppk-ormawa-42e49.firebasestorage.app",
+            messagingSenderId: "629446223042",
+            appId: "1:629446223042:web:092fe22b2bdb868ba2c75b"
+        };
+
 
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
   const linksRef = ref(db, 'links');
 
-  // Variabel Global
   window.links = [];
   const EMOJIS = ['🔗','🌐','💻','📱','🎨','🎮','🎬','🎵','📝','📚','🛍️','🔥','⚡','🚀','🛠️','📷','💼','❤️','🌈','💡'];
   let selectedIcon = EMOJIS[0];
   let uploadedPhoto = null;
   let currentTab = 'emoji';
 
-  // Listen data secara Real-time
   onValue(linksRef, (snapshot) => {
     const data = snapshot.val();
     window.links = data ? Object.keys(data).map(key => ({ ...data[key], fbKey: key })) : [];
@@ -156,11 +155,6 @@ header{ display: flex; align-items: center; justify-content: space-between; padd
     const filtered = window.links.filter(l => l.name.toLowerCase().includes(q) || l.url.toLowerCase().includes(q));
 
     grid.innerHTML = '';
-    if (filtered.length === 0) {
-      grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 4rem 1rem; color: var(--text-sub); font-size:14px;">Belum ada koleksi.</div>`;
-      return;
-    }
-
     filtered.reverse().forEach(l => {
       let domain = '';
       try { domain = new URL(l.url).hostname.replace('www.', ''); } catch(e) {}
@@ -170,7 +164,10 @@ header{ display: flex; align-items: center; justify-content: space-between; padd
       card.target = '_blank';
       const visual = l.photo ? `<img src="${l.photo}">` : `<span>${l.icon || '🔗'}</span>`;
       card.innerHTML = `
-        <div class="del-btn" onclick="window.deleteLink(event, '${l.fbKey}')">✕</div>
+        <div class="action-btns">
+            <div class="mini-btn edit" onclick="window.editLink(event, '${l.fbKey}')">✎</div>
+            <div class="mini-btn del" onclick="window.deleteLink(event, '${l.fbKey}')">✕</div>
+        </div>
         <div class="icon-box">${visual}</div>
         <div class="card-name">${l.name}</div>
         <div class="card-domain">${domain}</div>
@@ -180,39 +177,80 @@ header{ display: flex; align-items: center; justify-content: space-between; padd
   };
 
   window.saveLink = () => {
+    const editKey = document.getElementById('f-edit-key').value;
     const name = document.getElementById('f-name').value.trim();
     const url = document.getElementById('f-url').value.trim();
-    if(!url.startsWith('http')) { showToast('Gunakan URL lengkap!'); return; }
+    if(!url.startsWith('http')) return showToast('URL tidak valid');
 
-    const newRef = push(linksRef);
-    set(newRef, {
+    const linkData = {
       name: name || new URL(url).hostname,
       url: url,
       icon: currentTab === 'emoji' ? selectedIcon : null,
       photo: currentTab === 'photo' ? uploadedPhoto : null,
-      createdAt: Date.now()
-    }).then(() => {
-      window.closeModal();
-      showToast('Tersimpan di Cloud!');
-    });
+      updatedAt: Date.now()
+    };
+
+    if (editKey) {
+      // MODE EDIT
+      update(ref(db, `links/${editKey}`), linkData).then(() => {
+        window.closeModal();
+        showToast('Berhasil diperbarui!');
+      });
+    } else {
+      // MODE TAMBAH
+      const newRef = push(linksRef);
+      set(newRef, { ...linkData, createdAt: Date.now() }).then(() => {
+        window.closeModal();
+        showToast('Berhasil disimpan!');
+      });
+    }
   };
 
-  window.deleteLink = (e, fbKey) => {
+  window.editLink = (e, key) => {
     e.preventDefault(); e.stopPropagation();
-    remove(ref(db, `links/${fbKey}`)).then(() => showToast('Dihapus'));
+    const data = window.links.find(l => l.fbKey === key);
+    if (!data) return;
+
+    document.getElementById('modal-title').textContent = "Edit Link";
+    document.getElementById('f-edit-key').value = key;
+    document.getElementById('f-name').value = data.name;
+    document.getElementById('f-url').value = data.url;
+    
+    if (data.photo) {
+        window.switchTab('photo');
+        uploadedPhoto = data.photo;
+        document.getElementById('preview-img').src = data.photo;
+        document.getElementById('photo-preview-area').style.display = 'block';
+        document.getElementById('drop-zone').style.display = 'none';
+    } else {
+        window.switchTab('emoji');
+        selectedIcon = data.icon || EMOJIS[0];
+        initIcons();
+    }
+    
+    document.getElementById('modal-overlay').classList.add('open');
   };
 
-  // UI Functions
+  window.deleteLink = (e, key) => {
+    e.preventDefault(); e.stopPropagation();
+    if(confirm('Hapus link ini?')) {
+        remove(ref(db, `links/${key}`)).then(() => showToast('Dihapus'));
+    }
+  };
+
   window.openModal = () => {
+    document.getElementById('modal-title').textContent = "Simpan Link Baru";
+    document.getElementById('f-edit-key').value = "";
+    document.getElementById('f-name').value = "";
+    document.getElementById('f-url').value = "";
+    selectedIcon = EMOJIS[0];
     initIcons();
     window.switchTab('emoji');
     window.removePhoto();
-    document.getElementById('f-name').value = '';
-    document.getElementById('f-url').value = '';
     document.getElementById('modal-overlay').classList.add('open');
   };
+
   window.closeModal = () => document.getElementById('modal-overlay').classList.remove('open');
-  
   window.switchTab = (type) => {
     currentTab = type;
     document.getElementById('pane-emoji').style.display = type === 'emoji' ? 'block' : 'none';
